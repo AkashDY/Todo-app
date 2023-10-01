@@ -2,19 +2,31 @@
 import React, { useRef, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import Modal from "./Modal";
-import uuid from "react-uuid";
-export default function AddTask({ addTodos }) {
+
+
+export default function AddTask(props) {
   const [modalOpen, setModalOpen] = useState(false);
+
   const todoRef = useRef("");
   const openModal = () => {
     setModalOpen(true);
   };
-  function handleSubmitnewTodo(e) {
+  async function handleSubmitnewTodo(e) {
     e.preventDefault();
-    const data = { id: uuid(), text: todoRef.current.value, completed: false };
-
-    addTodos(data);
+    const data = { text: todoRef.current.value, completed: false };
+    //api
+    const response = await fetch("/api/addTodos", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
+    const res = await response.json();
+    console.log(res.result.insertedId);
     todoRef.current.value = "";
+    data.id = res.result.insertedId;
+    props.addTodo(data);
     setModalOpen(false);
   }
   return (
