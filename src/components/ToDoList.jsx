@@ -1,8 +1,25 @@
 import { AiOutlineCheckSquare, AiOutlineDelete } from "react-icons/ai";
+import { LuFileEdit } from "react-icons/lu";
 
 export default function ToDoList(props) {
-  const { todos } = props;
+  const todos = props.todos.filter((item) => item.completed === false);
   console.log(todos);
+  const completedTodosHandler = async (data) => {
+    data.completed = true;
+    // console.log(data);
+    const newData = { text: data.text, completed: data.completed };
+    const response = await fetch("/api/completeTodos", {
+      method: "POST",
+      body: JSON.stringify({
+        id: data.id,
+        newData,
+      }),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
+    props.filterTodos(data);
+  };
   return (
     <div className="overflow-x-auto mt-10">
       <table className="table">
@@ -19,8 +36,20 @@ export default function ToDoList(props) {
             return (
               <tr key={item.id}>
                 <td className="w-full">{item.text}</td>
-                Expand Down
                 <td className="flex gap-2">
+                  <AiOutlineCheckSquare
+                    onClick={() => {
+                      completedTodosHandler({
+                        id: item.id,
+                        text: item.text,
+                        completed: item.completed,
+                      });
+                    }}
+                    size={20}
+                    className="cursor-pointer "
+                    color="green"
+                  />
+                  <LuFileEdit className="cursor-pointer " size={19} />
                   <AiOutlineDelete
                     color="red"
                     className="cursor-pointer "
@@ -28,11 +57,6 @@ export default function ToDoList(props) {
                       deleteToDo(item.id);
                     }}
                     size={20}
-                  />
-                  <AiOutlineCheckSquare
-                    size={20}
-                    className="cursor-pointer "
-                    color="green"
                   />
                 </td>
               </tr>

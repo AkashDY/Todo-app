@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+
 async function handler(req, res) {
   if (req.method === "POST") {
     const data = req.body;
@@ -8,7 +9,7 @@ async function handler(req, res) {
       "mongodb+srv://hntrhound:DamzzXASl5wMg8J7@cluster0.vltkgzw.mongodb.net/?retryWrites=true&w=majority"
     );
     const db = client.db();
-    const todosCollection = db.collection("incomplete");
+    const todosCollection = db.collection("todos");
     const result = await todosCollection.insertOne(data);
     console.log("api/addTodos", result);
     res.status(201).json({ message: "task inserted!", result });

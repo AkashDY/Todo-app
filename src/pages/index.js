@@ -1,7 +1,8 @@
-import AddTask from "@/components/AddTask";
-import ToDoList from "@/components/ToDoList";
-import Todos from "@/components/Todos";
+import AddTask from "../components/AddTask";
+import ToDoList from "../components/ToDoList";
+import Todos from "../components/Todos"
 import { MongoClient } from "mongodb";
+
 function Home(props) {
   return (
     <div>
@@ -18,14 +19,16 @@ export async function getStaticProps() {
     "mongodb+srv://hntrhound:DamzzXASl5wMg8J7@cluster0.vltkgzw.mongodb.net/?retryWrites=true&w=majority"
   );
   const db = client.db();
-  const todosCollection = db.collection("incomplete");
+  const todosCollection = db.collection("todos");
   const todos = await todosCollection.find().toArray();
   client.close();
+
   return {
     props: {
       todos: todos.map((todo) => ({
         text: todo.text,
         id: todo._id.toString(),
+        completed: todo.completed,
       })),
     },
     revalidate: 10,
