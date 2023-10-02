@@ -5,12 +5,10 @@ import Modal from "./Modal";
 
 export default function ToDoList(props) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [id, setId] = useState();
+  const [idState, setId] = useState();
   const editTodoRef = useRef("");
   //this will show only if uncompleted task
-  console.log(modalOpen);
   const todos = props.todos.filter((item) => item.completed === false);
-  console.log(todos);
 
   const completedTodosHandler = async (data) => {
     data.completed = true;
@@ -32,18 +30,21 @@ export default function ToDoList(props) {
   async function handleEditTodo(e) {
     e.preventDefault();
     const newData = { text: editTodoRef.current.value, completed: false };
-    const response = await fetch("/api/editTodos", {
-      method: "POST",
-      body: JSON.stringify({
-        id: id,
-        newData,
-      }),
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch("/api/editTodos", {
+        method: "POST",
+        body: JSON.stringify({
+          id: id,
+          newData,
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+    } catch (error) {}
+
     const data = newData;
-    data.id = id;
+    data.id = idState;
     setModalOpen(false);
     props.filterTodos(data);
   }
@@ -52,6 +53,25 @@ export default function ToDoList(props) {
     setId(id);
     setModalOpen(true);
   };
+
+  //deleteTodo
+  async function deleteToDo(id) {
+    console.log("delete to do", id);
+    try {
+      const response = await fetch("/api/deleteTodo", {
+        method: "POST",
+        body: JSON.stringify({
+          id: id,
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+      props.deleteTodos(id);
+    } catch (error) {
+      console.log("error");
+    }
+  }
 
   return (
     <div className="overflow-x-auto mt-10">

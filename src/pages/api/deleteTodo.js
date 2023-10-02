@@ -1,5 +1,4 @@
 import { MongoClient, ObjectId } from "mongodb";
-
 async function handler(req, res) {
   if (req.method === "POST") {
     const client = await MongoClient.connect(
@@ -8,12 +7,11 @@ async function handler(req, res) {
     const db = client.db();
     const todosCollection = db.collection("todos");
 
-    const { id, newData } = req.body;
-    console.log("id and new", id, newData);
+    const { id } = req.body;
+    console.log("id ", id);
     const query = { _id: new ObjectId(id) };
-    const updatedData = await todosCollection.findOneAndReplace(query, newData);
-    res.status(200).json({ message: "updated" });
+    const res = await todosCollection.deleteOne(query);
+    res.status(200).json({ message: "item deleted" });
   }
 }
-
 export default handler;
